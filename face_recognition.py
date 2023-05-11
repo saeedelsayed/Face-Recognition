@@ -25,7 +25,7 @@ def PCA(face_vector):
 
     #select best k eigen vectors . this variable is changable according to the data set
     k = 10000
-    index_of_max_k_eigen_values = sorted(range(len(eigen_values)), key = lambda sub: eigen_values[sub])[-k:]
+    index_of_max_k_eigen_values = np.argpartition(eigen_values, -k)[-k:]
     k_eigen_vectors = []
 
     for i in range(len(index_of_max_k_eigen_values)):
