@@ -6,7 +6,7 @@ from face_recognition import *
 
 
 #read the images
-directory = 'images'
+directory = 'dataset_for_testing'
 
 face_vector = []
 face = []
