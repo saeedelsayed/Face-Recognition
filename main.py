@@ -45,3 +45,5 @@ prediction = np.asarray(prediction)
 
 accuracy = accuracy_score(y_test, prediction)
 print("Accuracy:", accuracy)
+
+plot_multiclass_roc(y_test, prediction,5)
