@@ -24,7 +24,7 @@ def PCA(face_vector):
     eigen_values, eigen_vectors = np.linalg.eig(covariance_matrix)
 
     #select best k eigen vectors . this variable is changable according to the data set
-    k = 10000
+    k = 100
     index_of_max_k_eigen_values = np.argpartition(eigen_values, -k)[-k:]
     k_eigen_vectors = []
 
