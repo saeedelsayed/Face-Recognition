@@ -3,6 +3,8 @@
 # from sklearn.metrics import roc_curve, auc
 # import matplotlib.pyplot as plt
 import numpy as np
+from sklearn.metrics import roc_curve, auc
+import matplotlib.pyplot as plt
 
 
 """
@@ -29,7 +31,7 @@ def PCA(face_vector):
     eigen_values, eigen_vectors = np.linalg.eig(covariance_matrix)
 
     #select best k eigen vectors . this variable is changable according to the data set
-    k = 20
+    k = 30
     index_of_max_k_eigen_values = np.argpartition(eigen_values, -k)[-k:]
     k_eigen_vectors = []
 
