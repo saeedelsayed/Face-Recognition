@@ -1,7 +1,7 @@
-from sklearn.decomposition import PCA
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import roc_curve, auc
-import matplotlib.pyplot as plt
+# from sklearn.decomposition import PCA
+# from sklearn.linear_model import LogisticRegression
+# from sklearn.metrics import roc_curve, auc
+# import matplotlib.pyplot as plt
 import numpy as np
 
 
@@ -29,7 +29,7 @@ def PCA(face_vector):
     eigen_values, eigen_vectors = np.linalg.eig(covariance_matrix)
 
     #select best k eigen vectors . this variable is changable according to the data set
-    k = 100
+    k = 20
     index_of_max_k_eigen_values = np.argpartition(eigen_values, -k)[-k:]
     k_eigen_vectors = []
 

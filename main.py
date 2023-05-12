@@ -6,7 +6,7 @@ from face_recognition import *
 
 
 #read the images
-directory = 'dataset_for_testing'
+directory = 'detected faces 250'
 
 face_vector = []
 face = []
@@ -24,10 +24,10 @@ face_vector = face_vector.transpose()
 
 
 weights, avg_face_vector, eigen_faces = PCA(face_vector)
-test_img = cv2.imread('image(14)_9.jpg',cv2.IMREAD_GRAYSCALE)
+test_img = cv2.imread('images_for_predection/saeid (15).pngface.jpg',cv2.IMREAD_GRAYSCALE)
 index = test(test_img, weights,avg_face_vector, eigen_faces)
 matched_image_filename = filenames[index]  # get the filename of the matched image
-matched_image_name = matched_image_filename.split("_")[0]  # extract the person name
+matched_image_name = matched_image_filename.split("(")[0]  # extract the person name
 print("Matched image: ", matched_image_name)
 plt.imshow(face[index], cmap="gray")
 plt.show()
