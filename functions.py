@@ -4,6 +4,10 @@ import cv2
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
+# Load the cascade
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+
+
 def get_reference_images(directory = 'images'):
     # Set up a list of reference faces
     reference_faces = []
@@ -127,3 +131,34 @@ def calculate_accuracy(reference_faces, reference_labels):
     accuracy = accuracy_score(y_test, prediction)
 
     return accuracy
+
+
+def detect_faces(input_image):
+
+    # Get the reference images and the their labels
+    reference_faces,reference_labels, reference_faces_vector = get_reference_images()
+
+    # Get the weights, eigen vectors and eigen values of the vector
+    weights, avg_face_vector, eigen_faces = apply_pca(reference_faces_vector)
+
+    gray_input_image = cv2.cvtColor(input_image,cv2.COLOR_BGR2GRAY)
+
+    # Draw a bounding box around the detected face and label it with the closest reference face
+    faces_detected = face_cascade.detectMultiScale(gray_input_image, scaleFactor=1.1, minNeighbors=5)
+
+    font_size = 30
+    font_scale = min(input_image.shape[:2]) / (20 * font_size)
+    thickness = max(2, int(font_scale))
+
+    if len(faces_detected) > 0:
+
+        for (x, y, w, h) in faces_detected:
+            face_cropped_img = gray_input_image[y:y+h, x:x+w]
+            resized_face_cropped_img = cv2.resize(face_cropped_img,(250,250))
+            closest_idx = recognize_face(resized_face_cropped_img, weights, avg_face_vector, eigen_faces)
+            calculated_accuracy = calculate_accuracy(reference_faces,reference_labels)*100
+
+            cv2.rectangle(input_image, (x, y), (x+w, y+h), (0, 0, 255), 2)
+            cv2.putText(input_image, f"{reference_labels[closest_idx]} {calculated_accuracy}%", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, font_scale, (0, 0, 255), thickness)
+    return input_image
+
