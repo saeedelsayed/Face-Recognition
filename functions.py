@@ -133,12 +133,12 @@ def calculate_accuracy(reference_faces, reference_labels):
     return accuracy
 
 
-def detect_faces(input_image,references,pca_parameters):
+def detect_faces(input_image,reference_labels,pca_parameters):
 
     gray_input_image = cv2.cvtColor(input_image,cv2.COLOR_BGR2GRAY)
 
     # Draw a bounding box around the detected face and label it with the closest reference face
-    faces_detected = face_cascade.detectMultiScale(gray_input_image, scaleFactor = 1.1, minNeighbors=4)
+    faces_detected = face_cascade.detectMultiScale(gray_input_image, scaleFactor = 1.3, minNeighbors=5)
 
     font_size = 30
     font_scale = min(input_image.shape[:2]) / (20 * font_size)
@@ -150,9 +150,8 @@ def detect_faces(input_image,references,pca_parameters):
             cropped_face_img = gray_input_image[y:y+h, x:x+w]
             resized_cropped_face_img = cv2.resize(cropped_face_img,(250,250))
             closest_idx = recognize_face(resized_cropped_face_img, pca_parameters[0], pca_parameters[1], pca_parameters[2])
-            calculated_accuracy = calculate_accuracy(references[0], references[1])*100
 
             cv2.rectangle(input_image, (x, y), (x+w, y+h), (0, 0, 255), thickness)
-            cv2.putText(input_image, f"{references[1][closest_idx]} {calculated_accuracy}%", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, font_scale, (0, 0, 255), thickness)
+            cv2.putText(input_image, f"{reference_labels[closest_idx]}", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, font_scale, (0, 0, 255), thickness)
     return input_image
 

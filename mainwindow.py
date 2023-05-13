@@ -84,7 +84,7 @@ class MainWindow(QMainWindow):
             stream, frame = self.camera.read()
             flipped_frame = cv2.flip(frame, 1)
 
-            flipped_frame = detect_faces(flipped_frame,references,pca_params)
+            flipped_frame = detect_faces(flipped_frame,references[1],pca_params)
 
             # Convert the frame to RGB format
             flipped_frame = cv2.cvtColor(flipped_frame, cv2.COLOR_BGR2RGB)
@@ -104,7 +104,7 @@ class MainWindow(QMainWindow):
         self.inputImagePath = fileName[0]
         input_image = cv2.imread(self.inputImagePath)
         
-        detected_input_image = detect_faces(input_image,references,pca_params)
+        detected_input_image = detect_faces(input_image,references[1],pca_params)
 
         cv2.imwrite("detected_faces_image.jpg",detected_input_image)
 
