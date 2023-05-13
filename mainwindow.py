@@ -3,8 +3,13 @@ import sys
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
-from functions import detect_faces
+from functions import detect_faces,get_reference_images,apply_pca
 
+# Get the reference images and the their labels
+references = get_reference_images()
+
+# Get the weights, eigen vectors and eigen values of the vector
+pca_params = apply_pca(references[2])
 
 
 class MainWindow(QMainWindow):
@@ -79,7 +84,7 @@ class MainWindow(QMainWindow):
             stream, frame = self.camera.read()
             flipped_frame = cv2.flip(frame, 1)
 
-            flipped_frame = detect_faces(flipped_frame)
+            flipped_frame = detect_faces(flipped_frame,references,pca_params)
 
             # Convert the frame to RGB format
             flipped_frame = cv2.cvtColor(flipped_frame, cv2.COLOR_BGR2RGB)
@@ -97,9 +102,9 @@ class MainWindow(QMainWindow):
     def browse_image(self):
         fileName = QFileDialog.getOpenFileName(self,"Select Image",filter="Image File (*.png *.jpg *.jpeg)")
         self.inputImagePath = fileName[0]
-        input_image = cv2.resize(cv2.imread(self.inputImagePath),(0,0),fx=0.5,fy=0.5)
+        input_image = cv2.imread(self.inputImagePath)
         
-        detected_input_image = detect_faces(input_image)
+        detected_input_image = detect_faces(input_image,references,pca_params)
 
         cv2.imwrite("detected_faces_image.jpg",detected_input_image)
 

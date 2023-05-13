@@ -133,32 +133,26 @@ def calculate_accuracy(reference_faces, reference_labels):
     return accuracy
 
 
-def detect_faces(input_image):
-
-    # Get the reference images and the their labels
-    reference_faces,reference_labels, reference_faces_vector = get_reference_images()
-
-    # Get the weights, eigen vectors and eigen values of the vector
-    weights, avg_face_vector, eigen_faces = apply_pca(reference_faces_vector)
+def detect_faces(input_image,references,pca_parameters):
 
     gray_input_image = cv2.cvtColor(input_image,cv2.COLOR_BGR2GRAY)
 
     # Draw a bounding box around the detected face and label it with the closest reference face
-    faces_detected = face_cascade.detectMultiScale(gray_input_image, scaleFactor=1.1, minNeighbors=5)
+    faces_detected = face_cascade.detectMultiScale(gray_input_image, scaleFactor = 1.1, minNeighbors=4)
 
     font_size = 30
     font_scale = min(input_image.shape[:2]) / (20 * font_size)
-    thickness = max(2, int(font_scale))
+    thickness = max(3, int(font_scale))
 
     if len(faces_detected) > 0:
 
         for (x, y, w, h) in faces_detected:
-            face_cropped_img = gray_input_image[y:y+h, x:x+w]
-            resized_face_cropped_img = cv2.resize(face_cropped_img,(250,250))
-            closest_idx = recognize_face(resized_face_cropped_img, weights, avg_face_vector, eigen_faces)
-            calculated_accuracy = calculate_accuracy(reference_faces,reference_labels)*100
+            cropped_face_img = gray_input_image[y:y+h, x:x+w]
+            resized_cropped_face_img = cv2.resize(cropped_face_img,(250,250))
+            closest_idx = recognize_face(resized_cropped_face_img, pca_parameters[0], pca_parameters[1], pca_parameters[2])
+            calculated_accuracy = calculate_accuracy(references[0], references[1])*100
 
-            cv2.rectangle(input_image, (x, y), (x+w, y+h), (0, 0, 255), 2)
-            cv2.putText(input_image, f"{reference_labels[closest_idx]} {calculated_accuracy}%", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, font_scale, (0, 0, 255), thickness)
+            cv2.rectangle(input_image, (x, y), (x+w, y+h), (0, 0, 255), thickness)
+            cv2.putText(input_image, f"{references[1][closest_idx]} {calculated_accuracy}%", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, font_scale, (0, 0, 255), thickness)
     return input_image
 
