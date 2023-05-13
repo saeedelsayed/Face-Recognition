@@ -1,6 +1,8 @@
 import numpy as np
 import os
 import cv2
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 
 def get_reference_images(directory = 'images'):
     # Set up a list of reference faces
@@ -26,7 +28,7 @@ def get_reference_images(directory = 'images'):
         reference_faces_vector.append(face.flatten())
     reference_faces_vector = np.asarray(reference_faces_vector).transpose()
     
-    return reference_labels,reference_faces_vector
+    return reference_faces,reference_labels,reference_faces_vector
 
 
 def apply_pca(reference_faces_vector):
@@ -93,3 +95,35 @@ def recognize_face(input_img, weights, avg_face_vector, eigen_faces):
     test_weight = (test_normalized_face_vector.T).dot(eigen_faces.T)
     index = np.argmin(np.linalg.norm(test_weight - weights, axis=1))
     return index
+
+
+def calculate_accuracy(reference_faces, reference_labels):
+
+    # Split the arrays to test & train
+    X_train, X_test, y_train, y_test = train_test_split(reference_faces, reference_labels, test_size=0.4, random_state=42)
+
+    reference_faces_vector = []
+
+    # Convert the to be trained images into a vector
+    X_train = np.asarray(X_train)
+    for image in X_train:
+        reference_faces_vector.append(image.flatten())
+
+    reference_faces_vector = np.asarray(reference_faces_vector)
+    reference_faces_vector = reference_faces_vector.transpose()
+
+    # Get the weights, eigen vectors and eigen values of the vector
+    weights, avg_face_vector, eigen_faces = apply_pca(reference_faces_vector)
+
+    # Recognize faces in test image 
+    prediction = []
+    for image in X_test:
+        index = recognize_face(image, weights, avg_face_vector, eigen_faces) 
+        prediction.append(y_train[index])
+
+    prediction = np.asarray(prediction)
+
+    # Calculate the accuracy
+    accuracy = accuracy_score(y_test, prediction)
+
+    return accuracy

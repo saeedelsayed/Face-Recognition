@@ -3,10 +3,10 @@ import sys
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
-from functions import get_reference_images, apply_pca, recognize_face
+from functions import get_reference_images, apply_pca, recognize_face,calculate_accuracy
 
 # Get the reference images and the their labels
-reference_labels, reference_faces_vector = get_reference_images()
+reference_faces,reference_labels, reference_faces_vector = get_reference_images()
 
 # Get the weights, eigen vectors and eigen values of the vector
 weights, avg_face_vector, eigen_faces = apply_pca(reference_faces_vector)
@@ -74,9 +74,10 @@ class MainWindow(QWidget):
                 face_cropped_img = gray_frame[y:y+h, x:x+w]
                 resized_face_cropped_img = cv2.resize(face_cropped_img,(250,250))
                 closest_idx = recognize_face(resized_face_cropped_img, weights, avg_face_vector, eigen_faces)
+                calculated_accuracy = calculate_accuracy(reference_faces,reference_labels)*100
 
                 cv2.rectangle(flipped_frame, (x, y), (x+w, y+h), (0, 0, 255), 2)
-                cv2.putText(flipped_frame, f"{reference_labels[closest_idx]}", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
+                cv2.putText(flipped_frame, f"{reference_labels[closest_idx]} - {calculated_accuracy}%", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
 
         # Convert the frame to RGB format
         flipped_frame = cv2.cvtColor(flipped_frame, cv2.COLOR_BGR2RGB)
