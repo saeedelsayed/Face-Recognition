@@ -3,7 +3,7 @@ import sys
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
-from functions import detect_faces, get_reference_images, apply_pca, roc
+from functions import detect_faces, get_reference_images, apply_pca, draw_roc_curve
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 
@@ -64,8 +64,23 @@ class MainWindow(QMainWindow):
 
         tab2.setLayout(tab2_layout)
 
+        # Third tab (ROC Curve)
+        tab3 = QWidget()
+        tab3_layout = QVBoxLayout()
+
+        self.rocCurve = QLabel()
+
+        self.drawCurveButton = QPushButton("Draw ROC Curve")
+        self.drawCurveButton.clicked.connect(self.show_roc_curve)
+
+        tab3_layout.addWidget(self.rocCurve)
+        tab3_layout.addWidget(self.drawCurveButton)
+        
+        tab3.setLayout(tab3_layout)
+
         tab_widget.addTab(tab1, "Webcam Detection")
         tab_widget.addTab(tab2, "Image Detection")
+        tab_widget.addTab(tab3, "ROC Curve")
 
         # Set the QTabWidget as the central widget of the main window
         self.setCentralWidget(tab_widget)
@@ -119,3 +134,9 @@ class MainWindow(QMainWindow):
         cv2.imwrite("detected_faces_image.jpg",detected_input_image)
 
         self.inputImage.setPixmap(QPixmap("detected_faces_image.jpg").scaled(self.inputImage.size(), Qt.KeepAspectRatio))
+
+# ---------------------- ROC tab functions ---------------------- #
+    def show_roc_curve(self):
+        draw_roc_curve(y_test,y_prob)
+        self.rocCurve.setPixmap(QPixmap("roc_curve.png").scaled(self.rocCurve.size(), Qt.KeepAspectRatio))
+

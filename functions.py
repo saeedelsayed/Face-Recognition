@@ -103,7 +103,7 @@ def recognize_face(input_img, avg_face_vector, eigen_faces,model):
     
     return model.predict(test_weight)[0]
 
-def detect_faces(input_image,pca_parameters,model):
+def detect_faces(input_image, pca_parameters, model):
 
     gray_input_image = cv2.cvtColor(input_image,cv2.COLOR_BGR2GRAY)
 
@@ -129,7 +129,7 @@ def detect_faces(input_image,pca_parameters,model):
             cv2.putText(input_image, f"{names[label]}", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, font_scale, (0, 0, 255), thickness)
     return input_image
 
-def roc(y_test, y_prob):
+def draw_roc_curve(y_test, y_prob):
     fpr = {}
     tpr = {}
     roc_auc = {}
@@ -151,5 +151,5 @@ def roc(y_test, y_prob):
     plt.ylabel('True Positive Rate')
     plt.title('Receiver operating characteristic for multinomial logistic regression')
     plt.legend(loc="lower right")
-    plt.show()
+    plt.savefig("roc_curve.png")
 
