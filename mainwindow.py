@@ -3,7 +3,9 @@ import sys
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
-from functions import detect_faces,get_reference_images,apply_pca
+from functions import detect_faces, get_reference_images, apply_pca, roc
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
 
 # Get the reference images and the their labels
 references = get_reference_images()
@@ -11,6 +13,14 @@ references = get_reference_images()
 # Get the weights, eigen vectors and eigen values of the vector
 pca_params = apply_pca(references[2])
 
+x_train, x_test, y_train, y_test = train_test_split(pca_params[0], references[1],test_size=0.2,random_state=42)
+
+model = LogisticRegression(multi_class='multinomial', solver='lbfgs')
+model.fit(x_train, y_train)
+
+y_prob = model.predict_proba(x_test)
+
+#roc(y_test, y_prob)
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -84,7 +94,7 @@ class MainWindow(QMainWindow):
             stream, frame = self.camera.read()
             flipped_frame = cv2.flip(frame, 1)
 
-            flipped_frame = detect_faces(flipped_frame,references[1],pca_params)
+            flipped_frame = detect_faces(flipped_frame, pca_params, model)
 
             # Convert the frame to RGB format
             flipped_frame = cv2.cvtColor(flipped_frame, cv2.COLOR_BGR2RGB)
@@ -103,8 +113,8 @@ class MainWindow(QMainWindow):
         fileName = QFileDialog.getOpenFileName(self,"Select Image",filter="Image File (*.png *.jpg *.jpeg)")
         self.inputImagePath = fileName[0]
         input_image = cv2.imread(self.inputImagePath)
-        
-        detected_input_image = detect_faces(input_image,references[1],pca_params)
+   
+        detected_input_image = detect_faces(input_image, pca_params, model)
 
         cv2.imwrite("detected_faces_image.jpg",detected_input_image)
 
