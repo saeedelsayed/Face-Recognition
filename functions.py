@@ -8,7 +8,7 @@ from sklearn.metrics import roc_curve, auc
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
 
-def get_reference_images(directory = 'images'):
+def get_reference_images(directory = 'faces2'):
     # Set up a list of reference faces
     reference_faces = []
     reference_labels = []
@@ -108,7 +108,7 @@ def detect_faces(input_image, pca_parameters, model):
     gray_input_image = cv2.cvtColor(input_image,cv2.COLOR_BGR2GRAY)
 
     # Draw a bounding box around the detected face and label it with the closest reference face
-    faces_detected = face_cascade.detectMultiScale(gray_input_image, scaleFactor = 1.3, minNeighbors=5)
+    faces_detected = face_cascade.detectMultiScale(gray_input_image, scaleFactor = 1.1, minNeighbors=5)
 
     font_size = 30
     font_scale = min(input_image.shape[:2]) / (20 * font_size)
@@ -123,7 +123,6 @@ def detect_faces(input_image, pca_parameters, model):
             label = recognize_face(resized_cropped_face_img, pca_parameters[1], pca_parameters[2], model)
 
             names = ['Abdelrahman', 'Diaa', 'Saeed', 'Sarta', 'Sherif']
-            print(names[label])
 
             cv2.rectangle(input_image, (x, y), (x+w, y+h), (0, 0, 255), thickness)
             cv2.putText(input_image, f"{names[label]}", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, font_scale, (0, 0, 255), thickness)
