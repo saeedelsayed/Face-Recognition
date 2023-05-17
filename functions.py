@@ -6,9 +6,9 @@ from sklearn.metrics import roc_curve, auc
 
 # Load the cascade
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+counter = 0
 
-
-def get_reference_images(directory = 'faces2'):
+def get_reference_images(directory = 'dataset3'):
     # Set up a list of reference faces
     reference_faces = []
     reference_labels = []
@@ -108,7 +108,7 @@ def detect_faces(input_image, pca_parameters, model):
     gray_input_image = cv2.cvtColor(input_image,cv2.COLOR_BGR2GRAY)
 
     # Draw a bounding box around the detected face and label it with the closest reference face
-    faces_detected = face_cascade.detectMultiScale(gray_input_image, scaleFactor = 1.1, minNeighbors=5)
+    faces_detected = face_cascade.detectMultiScale(gray_input_image, scaleFactor = 1.3, minNeighbors=5)
 
     font_size = 30
     font_scale = min(input_image.shape[:2]) / (20 * font_size)
@@ -128,21 +128,22 @@ def detect_faces(input_image, pca_parameters, model):
             cv2.putText(input_image, f"{names[label]}", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, font_scale, (0, 0, 255), thickness)
     return input_image
 
-def draw_roc_curve(y_test, y_prob):
+def draw_roc_curve(y_test, y_prob,n_classes):
     fpr = {}
     tpr = {}
     roc_auc = {}
-    for i in range(5):
+    for i in range(n_classes):
         fpr[i], tpr[i], _ = roc_curve(y_test == i, y_prob[:, i])
         roc_auc[i] = auc(fpr[i], tpr[i])
 
     # Plot the ROC curves for each class
     plt.figure()
 
-    for i in range(5):
+    for i in range(n_classes):
         plt.plot(fpr[i], tpr[i], lw=2,
             label='ROC curve of class {0} (area = {1:0.2f})'
             ''.format(i, roc_auc[i]))
+        
     plt.plot([0, 1], [0, 1], 'k--', lw=2)
     plt.xlim([0.0, 1.0])
     plt.ylim([0.0, 1.05])
@@ -151,4 +152,3 @@ def draw_roc_curve(y_test, y_prob):
     plt.title('Receiver operating characteristic for multinomial logistic regression')
     plt.legend(loc="lower right")
     plt.savefig("roc_curve.png")
-

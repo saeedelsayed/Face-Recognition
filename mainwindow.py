@@ -14,7 +14,7 @@ pca_params = apply_pca(references[2])
 
 x_train, x_test, y_train, y_test = train_test_split(pca_params[0], references[1],test_size=0.2,random_state=42)
 
-model = LogisticRegression(multi_class='multinomial', solver='lbfgs')
+model = LogisticRegression(multi_class='multinomial', solver='lbfgs',max_iter=1000)
 model.fit(x_train, y_train)
 
 y_prob = model.predict_proba(x_test)
@@ -136,6 +136,5 @@ class MainWindow(QMainWindow):
 
 # ---------------------- ROC tab functions ---------------------- #
     def show_roc_curve(self):
-        draw_roc_curve(y_test,y_prob)
+        draw_roc_curve(y_test, y_prob, 5)
         self.rocCurve.setPixmap(QPixmap("roc_curve.png").scaled(self.rocCurve.size(), Qt.KeepAspectRatio))
-
